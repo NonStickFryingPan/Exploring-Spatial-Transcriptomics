@@ -30,8 +30,7 @@ For decades we've ground up tissues, sequenced them in bulk, or dissociated them
 ---
 
 ## Notebooks
-
-> Check each folder link below for its own respective guide on how to replicate it.
+Check each folder link below for its own respective guide on how to replicate it.
 
 | # | Notebook | Dataset | Focus |
 |---|----------|---------|-------|
