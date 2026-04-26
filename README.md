@@ -39,39 +39,33 @@ Check each folder link below for its own respective guide on how to replicate it
 | 3 | [Visium H&E](03_squidpy_visium_hne/) | Mouse Brain (Visium + H&E) | Neighborhood enrichment, co-occurrence, ligand-receptor |
 | 4 | [Xenium](04_squidpy_xenium/) | Human Lung Cancer (Xenium) | Single-cell spatial, centrality, co-occurrence, Moran's I |
 
-### Tutorials followed
+## Tutorials Followed
 
-**1 — [Basic Scanpy Spatial](https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html)** — Standard scRNA-seq pipeline applied to spatial spots. QC → normalize → HVGs → PCA → UMAP → Leiden clusters. The spatial twist: `pl.spatial()` projects clusters back onto H&E tissue. First time seeing *where* clusters live.
+**1: [Basic Scanpy Spatial](https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html)**: Standard scRNA-seq pipeline applied to spatial spots. QC → normalize → HVGs → PCA → UMAP → Leiden clusters. The spatial twist: `pl.spatial()` projects clusters back onto H&E tissue. First time seeing *where* clusters live.
 
-<img width="1440" height="1960" alt="image" src="https://github.com/user-attachments/assets/a21d332e-a842-40f4-a6c7-80c32d146464" />
+**2: [Visium Fluorescence](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_fluo.html)**: Moved from transcriptomics into image space. Segmented nuclei from DAPI via Watershed, extracted per-spot features (cell count, marker intensity, texture). Ran PCA + Leiden on image features — no sequencing data used. Key finding: image features sub-divided hippocampus into structural layers that gene expression couldn't distinguish.
 
-**2 — [Visium Fluorescence](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_fluo.html)** — Moved from transcriptomics into image space. Segmented nuclei from DAPI via Watershed, extracted per-spot features (cell count, marker intensity, texture). Ran PCA + Leiden on image features — no sequencing data used. Key finding: image features sub-divided hippocampus into structural layers that gene expression couldn't distinguish.
+**3: [Visium H&E](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_hne.html)**: Shifted from *description* to *proof*. Multi-scale morphology → neighborhood enrichment (permutation test) → co-occurrence curves → spatially-filtered ligand-receptor (ligrec/OmniPath) → Moran's I for spatially variable genes. Linked morphology + proximity + function — the "holy trinity."
 
-<img width="1440" height="2056" alt="image" src="https://github.com/user-attachments/assets/4edf67c8-3971-40a4-b452-b63299dffa51" />
-
-**3 — [Visium H&E](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_hne.html)** — Shifted from *description* to *proof*. Multi-scale morphology → neighborhood enrichment (permutation test) → co-occurrence curves → spatially-filtered ligand-receptor (ligrec/OmniPath) → Moran's I for spatially variable genes. Linked morphology + proximity + function — the "holy trinity."
-
-<img width="1440" height="2132" alt="image" src="https://github.com/user-attachments/assets/202f82f5-6671-4646-aef7-cb7b80b6f290" />
-
-**4 — [Xenium](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_xenium.html)** — Single-molecule FISH platform, true single-cell resolution (not spots), transcripts localized within cell boundaries.
+**4: [Xenium](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_xenium.html)**: Single-molecule FISH platform, true single-cell resolution (not spots), transcripts localized within cell boundaries.
 
 ---
 
 ## Results
 
-### 1 — Basic Scanpy
+### 1: Basic Scanpy
 
 ~4,000 spots processed. The key takeaway was the high correlation between transcriptional clusters and the physical H&E image. Cluster 9 was identified as a distinct follicular region, confirmed by high expression of the marker gene *CR2*. These results prove that tissue structures can be digitally identified without a pathologist manually labelling every region.
 
-### 2 — Visium Fluorescence
+### 2: Visium Fluorescence
 
 Used DAPI and antibody staining (NEUN/GFAP). Watershed segmentation estimated actual cell counts per spot, which varied significantly across tissue layers. Image-based texture and intensity features provided *finer* detail than genes — gene clusters grouped the hippocampus as one large block, while image features correctly subdivided it into known anatomical sub-layers.
 
-### 3 — Visium H&E
+### 3: Visium H&E
 
 **Neighborhood Enrichment** scores showed that the Pyramidal layers and the Hippocampus are statistically significant neighbors, not just transcriptionally similar. **Moran's I** identified genes like *Olfm1* and *Plp1* as highly spatially structured (non-random). Specific ligand-receptor pairs were also found, identifying potential protein-level interactions at cluster borders.
 
-### 4 — Xenium
+### 4: Xenium
 
 Over 11,000 individual cells analyzed in a lung cancer sample. **Centrality scores** identified which cell types act as "hubs" in the tumor microenvironment. **Delaunay Triangulation** proved that tumor cells were not randomly distributed but formed tight, high-density networks distinct from the surrounding healthy stroma.
 
@@ -79,19 +73,17 @@ Over 11,000 individual cells analyzed in a lung cancer sample. **Centrality scor
 
 ## Definitions
 
-**Spots** — Physical circles on the glass slide, 55 µm diameter. Each spot catches RNA from a small group (1–10) of cells. Think of them as "pixels" of gene data.
+**Spots**: Physical circles on the glass slide, 55 µm diameter. Each spot catches RNA from a small group (1–10) of cells. Think of them as "pixels" of gene data.
 
-**Clusters** — Groups of spots that speak the same "molecular language." If two spots have nearly identical gene expression, the algorithm (Leiden) puts them in the same cluster.
+**Clusters**: Groups of spots that speak the same "molecular language." If two spots have nearly identical gene expression, the algorithm (Leiden) puts them in the same cluster.
 
-**AnnData** — The data structure that keeps everything together: the gene counts, the cell names, and the spatial coordinates.
+**AnnData**: The data structure that keeps everything together: the gene counts, the cell names, and the spatial coordinates.
 
-**H&E Staining** — The "pink and purple" picture. A standard chemical dye: purple (Hematoxylin) shows cell nuclei (DNA), pink (Eosin) shows proteins and structures.
+**H&E Staining**: The "pink and purple" picture. A standard chemical dye: purple (Hematoxylin) shows cell nuclei (DNA), pink (Eosin) shows proteins and structures.
 
-**PCA & UMAP** — Humans can't visualize 20,000 genes at once. These tools compress thousands of dimensions into a 2D map so we can see which cells are similar.
+**PCA & UMAP**: Humans can't visualize 20,000 genes at once. These tools compress thousands of dimensions into a 2D map so we can see which cells are similar.
 
-**Moran's I** — A score from −1 to 1. A high score means a gene isn't just floating everywhere — it's forming a specific, meaningful pattern or clump in the tissue.
-
-**Ligand-Receptor** — A ligand is a signal sent by one cell; a receptor is the ear that hears it. Finding these pairs tells us if two cell types are actually communicating.
+**Moran's I**: A score from −1 to 1. A high score means a gene isn't just floating everywhere — it's forming a specific, meaningful pattern or clump in the tissue.**Ligand-Receptor** — A ligand is a signal sent by one cell; a receptor is the ear that hears it. Finding these pairs tells us if two cell types are actually communicating.
 
 **Watershed** — A segmentation method. Imagine the image as a landscape — the computer "fills the valleys" with water until the "lakes" (cells) touch. Where they touch is the boundary.
 
