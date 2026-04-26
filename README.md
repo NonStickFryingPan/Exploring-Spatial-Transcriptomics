@@ -43,11 +43,17 @@ Check each folder link below for its own respective guide on how to replicate it
 
 **1 — [Basic Scanpy Spatial](https://scanpy-tutorials.readthedocs.io/en/latest/spatial/basic-analysis.html)** — Standard scRNA-seq pipeline applied to spatial spots. QC → normalize → HVGs → PCA → UMAP → Leiden clusters. The spatial twist: `pl.spatial()` projects clusters back onto H&E tissue. First time seeing *where* clusters live.
 
+<img width="1440" height="1960" alt="image" src="https://github.com/user-attachments/assets/a21d332e-a842-40f4-a6c7-80c32d146464" />
+
 **2 — [Visium Fluorescence](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_fluo.html)** — Moved from transcriptomics into image space. Segmented nuclei from DAPI via Watershed, extracted per-spot features (cell count, marker intensity, texture). Ran PCA + Leiden on image features — no sequencing data used. Key finding: image features sub-divided hippocampus into structural layers that gene expression couldn't distinguish.
+
+<img width="1440" height="2056" alt="image" src="https://github.com/user-attachments/assets/4edf67c8-3971-40a4-b452-b63299dffa51" />
 
 **3 — [Visium H&E](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_visium_hne.html)** — Shifted from *description* to *proof*. Multi-scale morphology → neighborhood enrichment (permutation test) → co-occurrence curves → spatially-filtered ligand-receptor (ligrec/OmniPath) → Moran's I for spatially variable genes. Linked morphology + proximity + function — the "holy trinity."
 
-**4 — [Xenium](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_xenium.html)** — Single-molecule FISH platform, true single-cell resolution (not spots), transcripts localized within cell boundaries. *(Not yet covered in detail.)*
+<img width="1440" height="2132" alt="image" src="https://github.com/user-attachments/assets/202f82f5-6671-4646-aef7-cb7b80b6f290" />
+
+**4 — [Xenium](https://squidpy.readthedocs.io/en/stable/notebooks/tutorials/tutorial_xenium.html)** — Single-molecule FISH platform, true single-cell resolution (not spots), transcripts localized within cell boundaries.
 
 ---
 
