@@ -9,7 +9,7 @@
 [![10x Visium](https://img.shields.io/badge/Platform-10x%20Visium-f59e0b?style=flat-square)](https://www.10xgenomics.com/spatial-gene-expression)
 [![10x Xenium](https://img.shields.io/badge/Platform-10x%20Xenium-e11d48?style=flat-square)](https://www.10xgenomics.com/platforms/xenium)
 
-[Overview](#overview) · [Notebooks](#notebooks) · [Results](#results) · [Definitions](#definitions)
+[Overview](#overview) · [Sections](#sections) · [Results](#results) · [Definitions](#definitions)
 
 </div>
 
@@ -29,10 +29,10 @@ For decades we've ground up tissues, sequenced them in bulk, or dissociated them
 
 ---
 
-## Notebooks
+## Sections
 Check each folder link below for its own respective guide on how to replicate it.
 
-| # | Notebook | Dataset | Focus |
+| # | Section | Dataset | Focus |
 |---|----------|---------|-------|
 | 1 | [Basic Scanpy Spatial](basicScanpy/) | Human Lymph Node (Visium) | QC, clustering, spatial visualization, marker genes |
 | 2 | [Visium Fluorescence](visFluorescence/) | Mouse Brain (Visium + fluorescence) | Image segmentation, segmentation features |
