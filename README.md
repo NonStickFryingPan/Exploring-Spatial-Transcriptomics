@@ -73,18 +73,18 @@ Over 11,000 individual cells analyzed in a lung cancer sample. **Centrality scor
 
 ## Definitions
 
-**Spots**: Physical circles on the glass slide, 55 µm diameter. Each spot catches RNA from a small group (1–10) of cells. Think of them as "pixels" of gene data.
+* **Spots**: Physical circles on the glass slide, 55 µm diameter. Each spot catches RNA from a small group (1–10) of cells. Think of them as "pixels" of gene data.
 
-**Clusters**: Groups of spots that speak the same "molecular language." If two spots have nearly identical gene expression, the algorithm (Leiden) puts them in the same cluster.
+* **Clusters**: Groups of spots that speak the same "molecular language." If two spots have nearly identical gene expression, the algorithm (Leiden) puts them in the same cluster.
 
-**AnnData**: The data structure that keeps everything together: the gene counts, the cell names, and the spatial coordinates.
+* **AnnData**: The data structure that keeps everything together: the gene counts, the cell names, and the spatial coordinates.
 
-**H&E Staining**: The "pink and purple" picture. A standard chemical dye: purple (Hematoxylin) shows cell nuclei (DNA), pink (Eosin) shows proteins and structures.
+* **H&E Staining**: The "pink and purple" picture. A standard chemical dye: purple (Hematoxylin) shows cell nuclei (DNA), pink (Eosin) shows proteins and structures.
 
-**PCA & UMAP**: Humans can't visualize 20,000 genes at once. These tools compress thousands of dimensions into a 2D map so we can see which cells are similar.
+* **PCA & UMAP**: Humans can't visualize 20,000 genes at once. These tools compress thousands of dimensions into a 2D map so we can see which cells are similar.
 
-**Moran's I**: A score from −1 to 1. A high score means a gene isn't just floating everywhere — it's forming a specific, meaningful pattern or clump in the tissue.**Ligand-Receptor** — A ligand is a signal sent by one cell; a receptor is the ear that hears it. Finding these pairs tells us if two cell types are actually communicating.
+* **Moran's I**: A score from −1 to 1. A high score means a gene isn't just floating everywhere — it's forming a specific, meaningful pattern or clump in the tissue.**Ligand-Receptor** — A ligand is a signal sent by one cell; a receptor is the ear that hears it. Finding these pairs tells us if two cell types are actually communicating.
 
-**Watershed** — A segmentation method. Imagine the image as a landscape — the computer "fills the valleys" with water until the "lakes" (cells) touch. Where they touch is the boundary.
+* **Watershed**: A segmentation method. Imagine the image as a landscape — the computer "fills the valleys" with water until the "lakes" (cells) touch. Where they touch is the boundary.
 
-**Delaunay Triangulation** — Creates a network of triangles between cells to determine exactly who is a neighbor to whom.
+* **Delaunay Triangulation**: Creates a network of triangles between cells to determine exactly who is a neighbor to whom.
