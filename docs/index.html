@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spatial Transcriptomics Masterclass</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg-elevated: #111111;
+    --bg-card: #161616;
+    --text: #e8e8e8;
+    --text-muted: #888888;
+    --accent: #4fc3f7;
+    --accent-dim: rgba(79,195,247,0.15);
+    --red: #ef5350;
+    --green: #66bb6a;
+    --orange: #ffa726;
+    --yellow: #ffee58;
+    --purple: #ab47bc;
+    --radius: 12px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .presentation {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+
+  /* Top bar */
+  .top-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 32px;
+    pointer-events: none;
+  }
+  .step-counter {
+    pointer-events: all;
+    font-size: 13px; color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .step-counter:hover { background: var(--bg-card); color: var(--text); }
+  .progress-bar-track {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    background: rgba(255,255,255,0.06);
+    z-index: 101;
+  }
+  .progress-bar-fill {
+    height: 100%; background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Slide container */
+  .slides-wrapper {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute;
+    max-width: 900px; width: 100%;
+    padding: 80px 40px 100px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    will-change: opacity, transform;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  .slide.exit-up {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+
+  /* Typography */
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  p, li {
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .muted { color: var(--text-muted); font-size: 0.95rem; }
+  .accent { color: var(--accent); }
+  .hero-num {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--accent);
+    margin: 16px 0;
+  }
+
+  /* Cards / badges */
+  .cards-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(79,195,247,0.3); }
+  .card-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .card-title { font-weight: 600; font-size: 1rem; margin-bottom: 6px; color: #fff; }
+  .card-body { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* Stats Row */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); margin-bottom: 8px;}
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-label { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;}
+
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 4px 0;
+  }
+  .badge-red { background: rgba(239,83,80,0.15); color: var(--red); }
+  .badge-green { background: rgba(102,187,106,0.15); color: var(--green); }
+  .badge-blue { background: var(--accent-dim); color: var(--accent); }
+  .badge-yellow { background: rgba(255,238,88,0.15); color: var(--yellow); }
+  .badge-purple { background: rgba(171,71,188,0.15); color: var(--purple); }
+
+  /* Insight box */
+  .insight-box {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  
+  .insight-box.warning {
+    background: rgba(239,83,80,0.1);
+    border-left-color: var(--red);
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 16px 0;
+  }
+
+  /* Chart containers */
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    margin: 16px 0;
+  }
+  
+  /* Pyramid / funnel */
+  .funnel {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin: 20px 0;
+  }
+  .funnel-layer {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+  .funnel-layer:hover { transform: scale(1.03); }
+  .fl1 { width: 100%; background: rgba(79,195,247,0.1); border: 1px solid var(--accent); color: var(--accent); }
+  .fl2 { width: 75%; background: rgba(255,238,88,0.1); border: 1px solid var(--yellow); color: var(--yellow); }
+  .fl3 { width: 50%; background: rgba(255,167,38,0.1); border: 1px solid var(--orange); color: var(--orange); }
+  .fl4 { width: 30%; background: rgba(102,187,106,0.15); border: 1px solid var(--green); color: var(--green); }
+
+  /* Flow Steps (Horizontal) */
+  .flow-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 24px 0;
+    background: rgba(255,255,255,0.02);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .flow-node {
+    text-align: center;
+    flex: 1;
+  }
+  .flow-node .val { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+  .flow-node .lbl { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;}
+  .flow-arrow {
+    color: rgba(255,255,255,0.2);
+    font-size: 1.5rem;
+    padding: 0 10px;
+  }
+
+  /* Steps list */
+  .steps-list { margin: 12px 0; list-style-type: none; }
+  .steps-list li {
+    padding: 8px 0;
+    padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,0.08);
+    margin-left: 8px;
+    position: relative;
+  }
+  .steps-list li::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 15px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .steps-list li strong { color: #fff; }
+
+  /* Two-column layout */
+  .split-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 20px 0;
+    align-items: center;
+  }
+
+  /* Pros / Cons */
+  .pros-cons {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0;
+  }
+  .pc-box {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .pc-box .pc-label {
+    font-weight: 700; font-size: 1rem; text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .pc-box.pros .pc-label { color: var(--green); }
+  .pc-box.cons .pc-label { color: var(--red); }
+  .pc-box ul { margin-left: 20px; margin-top: 10px; }
+  .pc-box li { padding: 4px 0; font-size: 0.9rem; }
+
+  /* SVG diagrams */
+  .diagram-container {
+    margin: 16px 0;
+    display: flex; justify-content: center;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .diagram-container svg { max-width: 100%; height: auto; }
+
+  /* Bottom nav */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 32px;
+    pointer-events: none;
+  }
+  .nav-btn {
+    pointer-events: all;
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s;
+    backdrop-filter: blur(10px);
+    user-select: none;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+  .nav-btn:active { transform: scale(0.97); }
+  .nav-btn.primary {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-btn.primary:hover { background: #6dd0fa; border-color: #6dd0fa; }
+  .nav-btn.hidden { opacity: 0; pointer-events: none; }
+
+  /* Jump menu */
+  .jump-menu {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-elevated);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+    z-index: 200;
+    display: none;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    min-width: 320px;
+  }
+  .jump-menu.open { display: block; }
+  .jump-menu h3 { margin-bottom: 12px; font-size: 0.95rem; color: var(--accent); }
+  .jump-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  }
+  .jump-item {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .jump-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+  .jump-item.active { background: var(--accent-dim); color: var(--accent); }
+  .jump-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 199;
+    display: none;
+  }
+  .jump-overlay.open { display: block; }
+
+  /* Helper classes */
+  .subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted); margin-bottom: 8px; font-weight: 400; }
+  .hook { font-size: clamp(0.88rem, 1.3vw, 1rem); color: var(--accent); margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .centered { text-align: center; }
+  .mt-12 { margin-top: 12px; }
+  .mt-20 { margin-top: 20px; }
+  .mb-8 { margin-bottom: 8px; }
+
+  @media (max-width: 700px) {
+    .slide { padding: 70px 20px 100px; }
+    .cards-row { grid-template-columns: 1fr; }
+    .split-row { grid-template-columns: 1fr; }
+    .pros-cons { grid-template-columns: 1fr; }
+    .jump-grid { grid-template-columns: 1fr; }
+    .flow-row { flex-direction: column; gap: 10px; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slide { transition: opacity 0.2s; transform: none !important; }
+    .slide.active { transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="presentation">
+
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+
+  <div class="top-bar">
+    <div></div>
+    <div class="step-counter" id="stepCounter" onclick="toggleJumpMenu()" role="button" tabindex="0" aria-label="Jump to step">Step 1 of 12</div>
+  </div>
+
+  <div class="slides-wrapper">
+
+    <!-- STEP 1 -->
+    <div class="slide active" data-step="1">
+      <div class="centered">
+        <div class="muted mb-8" style="font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase;">10x Genomics Workflows</div>
+        <h1 style="color:#fff;">Spatial Biology<br>Masterclass</h1>
+        <div class="subtitle">From Spots to Subcellular Networks</div>
+        <div class="hook">A complete summary of our Visium, Scanpy, Squidpy, and Xenium pipelines.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="slide" data-step="2">
+      <h2>The Core Concept</h2>
+      <p style="margin-bottom:24px;">Grinding up a tissue for sequencing tells you <em>what</em> is there, but destroys the map. Spatial Transcriptomics keeps the "address" of every cell. Today, we used two distinct platforms:</p>
+      
+      <div class="split-row">
+        <div class="card">
+          <div class="badge badge-purple mb-8">10x Visium</div>
+          <div class="card-title">"Digital Staining"</div>
+          <div class="card-body">
+            Uses a slide with ~5,000 spots (55µm each). Captures the entire transcriptome (~20k genes). It's slightly "blurry" because one spot can contain 1–10 cells.
+          </div>
+        </div>
+        <div class="card">
+          <div class="badge badge-blue mb-8">10x Xenium</div>
+          <div class="card-title">"Subcellular High-Def"</div>
+          <div class="card-body">
+            Uses single-molecule FISH. Looks at a curated panel (e.g., 500 genes) but provides exact X-Y coordinates of every individual RNA molecule <em>inside</em> the cell.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="slide" data-step="3">
+      <h2>Tutorial 1: Basic Scanpy Spatial</h2>
+      <p>We started with the "Hello World" of spatial biology: a Human Lymph Node mapped using <code>sc.datasets.visium_sge</code>.</p>
+      
+      <div class="cards-row mt-20">
+        <div class="card">
+          <div class="card-icon">🧹</div>
+          <div class="card-title">Quality Control (QC)</div>
+          <div class="card-body">We filtered spots with extreme counts and removed spots with >20% mitochondrial genes (a sign of cell death/stress).</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🧮</div>
+          <div class="card-title">Normalization</div>
+          <div class="card-body">Sequencing depth was scaled to remove technical variance, followed by log-transformation. Top 2000 Highly Variable Genes (HVGs) selected.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🧩</div>
+          <div class="card-title">Leiden Clustering</div>
+          <div class="card-body">PCA → KNN Graph → UMAP. We grouped spots that "spoke the same molecular language" into transcriptional clusters.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="slide" data-step="4">
+      <h2>Mapping Genes to Tissue</h2>
+      <p>The magic of Scanpy's spatial module is projecting transcriptional data back onto the physical H&E image.</p>
+      
+      <div class="diagram-container">
+        <svg width="400" height="150" viewBox="0 0 400 150">
+          <!-- Background tissue outline -->
+          <path d="M 50 20 Q 100 0, 150 30 T 250 20 T 350 40 L 370 120 Q 300 150, 200 130 T 50 110 Z" fill="rgba(255,105,180,0.1)" stroke="#ab47bc" stroke-width="2" stroke-dasharray="4"/>
+          <!-- Simulated spots -->
+          <circle cx="80" cy="50" r="10" fill="#4fc3f7" opacity="0.8"/>
+          <circle cx="110" cy="45" r="10" fill="#4fc3f7" opacity="0.8"/>
+          <circle cx="95" cy="75" r="10" fill="#4fc3f7" opacity="0.8"/>
+          
+          <circle cx="200" cy="60" r="10" fill="#66bb6a" opacity="0.8"/>
+          <circle cx="230" cy="70" r="10" fill="#66bb6a" opacity="0.8"/>
+          <circle cx="190" cy="90" r="10" fill="#66bb6a" opacity="0.8"/>
+
+          <circle cx="300" cy="80" r="10" fill="#ffa726" opacity="0.8"/>
+          <circle cx="330" cy="70" r="10" fill="#ffa726" opacity="0.8"/>
+          <circle cx="320" cy="100" r="10" fill="#ffa726" opacity="0.8"/>
+
+          <text x="95" y="105" text-anchor="middle" fill="#fff" font-size="12">Cluster 1</text>
+          <text x="210" y="120" text-anchor="middle" fill="#fff" font-size="12">Cluster 2</text>
+          <text x="320" y="130" text-anchor="middle" fill="#fff" font-size="12">Cluster 9 (CR2+)</text>
+        </svg>
+      </div>
+
+      <div class="insight-box mt-20">
+        <strong>The Key Finding:</strong> We identified Cluster 9 as a distinct follicular region, confirmed by the marker gene <em>CR2</em>. We proved we can "digitally" identify tissue structures without a pathologist manually labeling every region.
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="slide" data-step="5">
+      <h2>Tutorial 2: Visium Fluorescence</h2>
+      <p>We shifted focus from transcriptomics to <strong>image space</strong> using Squidpy. Instead of an H&E stain, we used DAPI (DNA) and antibody stains (NEUN/GFAP) on a mouse brain slice.</p>
+      
+      <div class="flow-row">
+        <div class="flow-node">
+          <div class="val" style="color: #ab47bc;">DAPI Image</div>
+          <div class="lbl">Raw Fluorescence</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="val" style="color: #4fc3f7;">Watershed</div>
+          <div class="lbl">Nuclei Segmentation</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="val green">Features</div>
+          <div class="lbl">Intensity & Texture</div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3 style="color: var(--yellow);">The "Aha" Moment</h3>
+        <p>By running Leiden clustering <em>only</em> on the extracted image features (no sequencing data!), we were able to subdivide the Hippocampus into known anatomical sub-layers. The gene expression data had previously grouped it all as one single block.</p>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="slide" data-step="6">
+      <h2>Tutorial 3: Visium H&E Math</h2>
+      <p>We moved past visualization into true <strong>Spatial Statistics</strong> using Squidpy on a mouse brain H&E section. This proved relationships mathematically.</p>
+      
+      <div class="cards-row mt-20">
+        <div class="card">
+          <div class="card-icon">🤝</div>
+          <div class="card-title">Neighborhood Enrichment</div>
+          <div class="card-body">A permutation test proving the Pyramidal layers and the Hippocampus are statistically significant physical neighbors.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📏</div>
+          <div class="card-title">Co-occurrence</div>
+          <div class="card-body">Calculating the conditional probability of finding specific clusters as you increase the radius from a given spot.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📞</div>
+          <div class="card-title">Ligand-Receptor</div>
+          <div class="card-body">Used OmniPath/CellPhoneDB logic to find protein-level conversations happening at physical borders.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="slide" data-step="7">
+      <h2>The "Clumpiness" Index: Moran's I</h2>
+      <p>Instead of just finding cluster markers, we searched for <strong>Spatially Variable Genes (SVGs)</strong>. We calculated the global spatial autocorrelation.</p>
+
+      <div class="split-row mt-20">
+        <div>
+          <div class="badge badge-green">Moran's I Score</div>
+          <div class="hero-num" style="color: var(--green);">0.76</div>
+          <p class="muted">Example score for gene <em>Olfm1</em></p>
+        </div>
+        <div>
+          <p>A score near 1.0 means the gene expression is highly structured. A score near 0 means it's randomly scattered noise.</p>
+          <p class="mt-12">Identifying genes like <em>Olfm1</em> and <em>Plp1</em> proves that biology is organized. These genes aren't randomly distributed in a "soup"—they are the architects of the brain's structural layout.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 8 -->
+    <div class="slide" data-step="8">
+      <h2>Tutorial 4: The Xenium Era</h2>
+      <p>We stepped into the big leagues: <strong>11,898 individual cells</strong> from a human lung cancer sample using the modern <code>SpatialData</code> and Zarr framework.</p>
+      
+      <div class="chart-container" style="height: 250px;">
+        <canvas id="chartResolution"></canvas>
+      </div>
+      <p class="muted centered mt-12">Xenium datasets contain millions of coordinates (Points) and exact cell boundaries (Shapes). Old-school memory formats crash; Zarr allows chunked loading.</p>
+    </div>
+
+    <!-- STEP 9 -->
+    <div class="slide" data-step="9">
+      <h2>Advanced Graphing: Delaunay</h2>
+      <p>Visium spots sit on a perfect grid. Xenium cells are messy, irregularly packed shapes in a real tumor. How do we know who is a neighbor?</p>
+
+      <div class="diagram-container">
+        <svg width="400" height="150" viewBox="0 0 400 150">
+          <!-- Lines -->
+          <line x1="100" y1="40" x2="160" y2="80" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="100" y1="40" x2="120" y2="120" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="160" y1="80" x2="120" y2="120" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="160" y1="80" x2="230" y2="60" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="230" y1="60" x2="280" y2="110" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="160" y1="80" x2="280" y2="110" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="120" y1="120" x2="210" y2="140" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="160" y1="80" x2="210" y2="140" stroke="#4fc3f7" stroke-width="2"/>
+          <line x1="280" y1="110" x2="210" y2="140" stroke="#4fc3f7" stroke-width="2"/>
+
+          <!-- Nodes -->
+          <circle cx="100" cy="40" r="12" fill="#ef5350"/>
+          <circle cx="160" cy="80" r="16" fill="#ffee58"/> <!-- Hub -->
+          <circle cx="120" cy="120" r="12" fill="#ab47bc"/>
+          <circle cx="230" cy="60" r="12" fill="#ef5350"/>
+          <circle cx="280" cy="110" r="12" fill="#ab47bc"/>
+          <circle cx="210" cy="140" r="12" fill="#ef5350"/>
+          
+          <text x="160" y="70" text-anchor="middle" fill="#000" font-weight="bold" font-size="10">HUB</text>
+        </svg>
+      </div>
+
+      <ul class="steps-list mt-12">
+        <li><strong>Delaunay Triangulation</strong> creates a network of triangles between cell centroids to perfectly define adjacent neighbors.</li>
+        <li><strong>Centrality Scores:</strong> Using this graph, we calculated closeness and degree centrality to identify specific tumor cells acting as "hubs" in the microenvironment.</li>
+      </ul>
+    </div>
+
+    <!-- STEP 10 -->
+    <div class="slide" data-step="10">
+      <h2>Key Terminology Toolkit</h2>
+      
+      <div class="pros-cons mt-20">
+        <div class="pc-box pros" style="border: 1px solid rgba(255,255,255,0.08);">
+          <div class="pc-label" style="color:var(--accent);">Data Structures</div>
+          <ul>
+            <li><strong>AnnData:</strong> The master "Data Box." Holds counts (.X), metadata (.obs), and coordinates (.obsm).</li>
+            <li><strong>SpatialData:</strong> The modern standard. Aligns images, transcript points, and cell shapes natively.</li>
+          </ul>
+        </div>
+        <div class="pc-box cons" style="border: 1px solid rgba(255,255,255,0.08);">
+          <div class="pc-label" style="color:var(--yellow);">Biological Concepts</div>
+          <ul>
+            <li><strong>Spots vs Cells:</strong> Visium uses 55µm circles (1-10 cells). Xenium segments true single cells.</li>
+            <li><strong>Clusters:</strong> Groups of spots/cells with highly similar gene expression profiles (Leiden).</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="insight-box mt-12" style="border-left-color: var(--purple); background: rgba(171,71,188,0.1);">
+        <strong>H&E Staining:</strong> The classic pink and purple dye. Hematoxylin (purple) binds to DNA/nuclei. Eosin (pink) binds to proteins/cytoplasm.
+      </div>
+    </div>
+
+    <!-- STEP 11 -->
+    <div class="slide" data-step="11">
+      <h2>The "Holy Trinity" of Spatial</h2>
+      <p>Throughout the day, our pipeline successfully bridged the three critical pillars of modern spatial biology:</p>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-value" style="color: #4fc3f7;">Morphology</div>
+          <div class="stat-label">Image features, texture, and segmentation defining structure.</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: #ffee58;">Proximity</div>
+          <div class="stat-label">Neighborhood enrichment & co-occurrence graphs.</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" style="color: #ef5350;">Function</div>
+          <div class="stat-label">Moran's I patterns and Ligand-Receptor cell signaling.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 12 -->
+    <div class="slide" data-step="12">
+      <h2 class="centered">Summary & Final Deliverables</h2>
+      
+      <div class="cards-row mt-20">
+        <div class="card" style="text-align: center; padding: 30px 20px;">
+          <div class="card-icon mb-8">📁</div>
+          <div class="card-title">Clean Repositories</div>
+          <div class="card-body">Segmented tutorials into 4 clean directories, renamed output images sequentially, and drafted Caveman-style Markdown READMEs.</div>
+        </div>
+        <div class="card" style="text-align: center; padding: 30px 20px;">
+          <div class="card-icon mb-8">🚀</div>
+          <div class="card-title">Ready for Research</div>
+          <div class="card-body">Moved from basic spot visualization to sub-cellular interactive mapping. We are ready to model tumor microenvironments.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides-wrapper -->
+
+  <!-- Bottom nav -->
+  <div class="nav-bar">
+    <button class="nav-btn hidden" id="btnPrev" onclick="prevStep()" aria-label="Previous step">← Prev Slide</button>
+    <button class="nav-btn primary" id="btnNext" onclick="nextStep()" aria-label="Next step">Next Slide →</button>
+  </div>
+
+  <!-- Jump menu -->
+  <div class="jump-overlay" id="jumpOverlay" onclick="toggleJumpMenu()"></div>
+  <div class="jump-menu" id="jumpMenu">
+    <h3>Jump to Slide</h3>
+    <div class="jump-grid" id="jumpGrid"></div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const TOTAL = 12;
+  let current = 1;
+  let chartsInitialized = {};
+
+  const slides = document.querySelectorAll('.slide');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const stepCounter = document.getElementById('stepCounter');
+  const progressFill = document.getElementById('progressFill');
+
+  // Chart.js global defaults
+  Chart.defaults.color = '#888';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+  // Build jump menu
+  const stepLabels =[
+    'Title & Overview', 
+    'The Core Concept (Platforms)', 
+    'Tutorial 1: Basic Scanpy', 
+    'Mapping Genes to Tissue', 
+    'Tutorial 2: Visium Fluo', 
+    'Tutorial 3: Visium Math', 
+    'Moran\'s I Score', 
+    'Tutorial 4: The Xenium Era', 
+    'Advanced Graphing: Delaunay', 
+    'Terminology Toolkit', 
+    'The Holy Trinity', 
+    'Summary & Conclusion'
+  ];
+  
+  const jumpGrid = document.getElementById('jumpGrid');
+  for (let i = 1; i <= TOTAL; i++) {
+    const el = document.createElement('div');
+    el.className = 'jump-item';
+    el.textContent = i + '. ' + stepLabels[i - 1];
+    el.dataset.step = i;
+    el.onclick = function() { goToStep(i); toggleJumpMenu(); };
+    jumpGrid.appendChild(el);
+  }
+
+  function updateUI() {
+    stepCounter.textContent = 'Slide ' + current + ' of ' + TOTAL;
+    progressFill.style.width = ((current / TOTAL) * 100) + '%';
+    btnPrev.classList.toggle('hidden', current === 1);
+    if (current === TOTAL) {
+      btnNext.textContent = '← Restart';
+    } else {
+      btnNext.textContent = 'Next Slide →';
+    }
+    jumpGrid.querySelectorAll('.jump-item').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.step) === current);
+    });
+  }
+
+  function goToStep(n) {
+    if (n < 1 || n > TOTAL || n === current) return;
+    const dir = n > current ? 1 : -1;
+    const oldSlide = slides[current - 1];
+    const newSlide = slides[n - 1];
+
+    oldSlide.classList.remove('active');
+    if (dir > 0) oldSlide.classList.add('exit-up');
+    else oldSlide.classList.remove('exit-up');
+
+    oldSlide.style.transform = dir > 0 ? 'translateY(-24px)' : 'translateY(24px)';
+    oldSlide.style.opacity = '0';
+
+    newSlide.style.transition = 'none';
+    newSlide.style.transform = dir > 0 ? 'translateY(24px)' : 'translateY(-24px)';
+    newSlide.style.opacity = '0';
+    newSlide.classList.remove('exit-up');
+
+    void newSlide.offsetWidth; // Force reflow
+
+    newSlide.style.transition = '';
+    newSlide.classList.add('active');
+    newSlide.style.transform = '';
+    newSlide.style.opacity = '';
+
+    current = n;
+    updateUI();
+    initChartsForStep(n);
+  }
+
+  window.nextStep = function() {
+    if (current === TOTAL) goToStep(1);
+    else goToStep(current + 1);
+  };
+  window.prevStep = function() { goToStep(current - 1); };
+
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('jumpMenu').classList.contains('open')) {
+      if (e.key === 'Escape') toggleJumpMenu();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
+  });
+
+  window.toggleJumpMenu = function() {
+    document.getElementById('jumpMenu').classList.toggle('open');
+    document.getElementById('jumpOverlay').classList.toggle('open');
+  };
+
+  // ---- Charts ----
+  function initChartsForStep(step) {
+    if (step === 8 && !chartsInitialized[8]) { initResolutionChart(); chartsInitialized[8] = true; }
+  }
+
+  function initResolutionChart() {
+    new Chart(document.getElementById('chartResolution'), {
+      type: 'bar',
+      data: {
+        labels:['Visium (Spots per Slide)', 'Xenium (Cells per FOV)', 'Xenium (Transcripts per FOV)'],
+        datasets:[{
+          label: 'Data Scale',
+          data:[5000, 11898, 40257199],
+          backgroundColor:[
+            'rgba(171,71,188,0.7)',
+            'rgba(79,195,247,0.7)',
+            'rgba(102,187,106,0.7)'
+          ],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { 
+          legend: { display: false }, 
+          title: { display: true, text: 'Data Scale: Visium vs Xenium (Log Scale)', color: '#e8e8e8', font: { size: 14, weight: '600' } } 
+        },
+        scales: {
+          x: { 
+            type: 'logarithmic', 
+            title: { display: true, text: 'Count (Log)', color: '#888' }, 
+            grid: { color: 'rgba(255,255,255,0.04)' } 
+          },
+          y: { grid: { display: false } }
+        },
+        animation: { duration: 1200, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  // Init
+  updateUI();
+})();
+</script>
+</body>
+</html>
