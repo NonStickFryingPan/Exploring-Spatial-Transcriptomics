@@ -1,7 +1,7 @@
 <div align="center">
 
-# 🔭 Spatial Transcriptomics Pipeline
-**Exploring gene expression in physical space — from 55 µm Visium spots to subcellular Xenium resolution**
+# 🔭 Spatial Transcriptomics
+**An exploration of 'Spatial Biology' using 10x Genomics Visium & Xenium data.**
 
 [![Scanpy](https://img.shields.io/badge/Analysis-Scanpy-1f6feb?style=flat-square)](https://scanpy.readthedocs.io/en/latest/)
 [![Squidpy](https://img.shields.io/badge/Spatial-Squidpy-16a34a?style=flat-square)](https://squidpy.readthedocs.io/)
