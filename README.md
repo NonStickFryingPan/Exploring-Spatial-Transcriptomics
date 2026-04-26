@@ -9,7 +9,7 @@
 [![10x Visium](https://img.shields.io/badge/Platform-10x%20Visium-f59e0b?style=flat-square)](https://www.10xgenomics.com/spatial-gene-expression)
 [![10x Xenium](https://img.shields.io/badge/Platform-10x%20Xenium-e11d48?style=flat-square)](https://www.10xgenomics.com/platforms/xenium)
 
-[Overview](#overview) · [Sections](#sections) · [Results](#results) · [Definitions](#definitions)
+[Overview](#overview) · [Sections](#sections) · [Results](#results) · [Definitions](#definitions) · [Visual](https://nonstickfryingpan.github.io/Exploring-Spatial-Transcriptomics/)
 
 </div>
 
