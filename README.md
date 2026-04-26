@@ -34,10 +34,10 @@ Check each folder link below for its own respective guide on how to replicate it
 
 | # | Notebook | Dataset | Focus |
 |---|----------|---------|-------|
-| 1 | [Basic Scanpy Spatial](01_scanpy_basic/) | Human Lymph Node (Visium) | QC, clustering, spatial visualization, marker genes |
-| 2 | [Visium Fluorescence](02_squidpy_visium_fluo/) | Mouse Brain (Visium + fluorescence) | Image segmentation, segmentation features |
-| 3 | [Visium H&E](03_squidpy_visium_hne/) | Mouse Brain (Visium + H&E) | Neighborhood enrichment, co-occurrence, ligand-receptor |
-| 4 | [Xenium](04_squidpy_xenium/) | Human Lung Cancer (Xenium) | Single-cell spatial, centrality, co-occurrence, Moran's I |
+| 1 | [Basic Scanpy Spatial](basicScanpy/) | Human Lymph Node (Visium) | QC, clustering, spatial visualization, marker genes |
+| 2 | [Visium Fluorescence](visFluorescence/) | Mouse Brain (Visium + fluorescence) | Image segmentation, segmentation features |
+| 3 | [Visium H&E](visHnE) | Mouse Brain (Visium + H&E) | Neighborhood enrichment, co-occurrence, ligand-receptor |
+| 4 | [Xenium](xenium/) | Human Lung Cancer (Xenium) | Single-cell spatial, centrality, co-occurrence, Moran's I |
 
 ## Tutorials Followed
 
