@@ -19,6 +19,9 @@
 
 This repo aims to explore spatial transcriptomics across two 10x Genomics scales: Visium (55 µm spots) and Xenium (subcellular single-cell resolution) using [Scanpy](https://scanpy.readthedocs.io/en/latest/) for clustering, [Squidpy](https://squidpy.readthedocs.io/) for image features and spatial statistics (Moran's I, ligand–receptor, neighborhoods), and the [SpatialData/Zarr](https://spatialdata.scverse.org/en/latest/) ecosystem for cell-level analysis.
 
+> [!WARNING]
+> ### Notebook Outputs: The `basicscanpy` tutorial `.ipynb` file does not contain saved outputs because they were cleared for upload. Its generated results are available in the `results/` folder. All other notebooks retain outputs both in their edited `.ipynb` files and in the corresponding files inside the `results/` folder.
+
 ---
 
 ## What is Spatial Transcriptomics?
