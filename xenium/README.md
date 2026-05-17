@@ -1,6 +1,6 @@
 # Xenium Single-Cell Analysis with SpatialData
 
-Subcellular transcript mapping and single-cell graph centrality analysis of human lung cancer. [Data Info](https://www.10xgenomics.com/datasets/xenium-human-lung-cancer-replicate-1-standard).
+Subcellular transcript mapping and single-cell graph centrality analysis of human lung cancer.
 
 ## Setup
 ```python
